@@ -12,7 +12,7 @@ COMMAND=$1
 if git describe --exact-match >/dev/null; then
 	VERSION=$(git describe --dirty)
 else
-	VERSION=$(git describe --abbrev=0 --dirty)+dev.$(git rev-parse HEAD)
+	VERSION=$(git describe --tags --abbrev=0 --dirty)+dev.$(git rev-parse HEAD)
 fi
 
 echo "Building $GOBIN/$COMMAND"
