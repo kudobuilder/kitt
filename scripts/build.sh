@@ -9,8 +9,8 @@ source "$(dirname "$0")/config.sh"
 
 COMMAND=$1
 
-if git describe --exact-match >/dev/null; then
-	VERSION=$(git describe --dirty)
+if git describe --tags --exact-match >/dev/null; then
+	VERSION=$(git describe --tags --dirty)
 else
 	VERSION=$(git describe --tags --abbrev=0 --dirty)+dev.$(git rev-parse HEAD)
 fi
