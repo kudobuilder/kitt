@@ -9,7 +9,6 @@ import (
 func updateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update [operator.yaml...]",
-		Args:  cobra.MinimumNArgs(1),
 		Short: "Update a repository with operators",
 		Long: `KUDO repositories consist of a collection of indexed operator package tarballs.
 kitt creates or updates such a repository by resolving a list of operator
