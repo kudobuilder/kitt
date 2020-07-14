@@ -9,8 +9,8 @@ import (
 )
 
 func TestResolve(t *testing.T) {
-	testClone := func(ctx context.Context, url, branch, tempDir string) error {
-		if url == "example.org" && branch == "test" {
+	testClone := func(ctx context.Context, tempDir, url, branch, sha string) error {
+		if url == "example.org" && branch == "test" && sha == "" {
 			return nil
 		}
 

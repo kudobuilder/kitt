@@ -39,9 +39,14 @@ type Git struct {
 	// cloned and the specified tag is checked out.
 	Source string
 
-	// Tag of the KUDO operator version.
-	Tag string
-
 	// Directory where the KUDO operator is defined in the Git repository.
 	Directory string
+
+	// Tag (or branch) of the KUDO operator version.
+	Tag string
+
+	// Optional SHA of the KUDO operator version if a branch is used instead of
+	// a tag. If this isn't set, the latest commit of the referenced branch will
+	// be used.
+	SHA string
 }
