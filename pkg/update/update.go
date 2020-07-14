@@ -124,7 +124,7 @@ func getResolver(o operator.Operator, version operator.Version) (resolvers.Resol
 		}
 
 		// TODO: cache git sources to ensure that repositories are only cloned once per source
-		resolver := git.NewResolver(source.URL, version.Git.Tag, version.Git.Directory)
+		resolver := git.NewResolver(source.URL, version.Git.Tag, version.Git.SHA, version.Git.Directory)
 
 		return resolver, nil
 	}

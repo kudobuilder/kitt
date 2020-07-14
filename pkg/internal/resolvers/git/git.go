@@ -16,17 +16,19 @@ import (
 type Resolver struct {
 	URL               string
 	Branch            string
+	SHA               string
 	OperatorDirectory string
 
 	// Extracted function to simplify testing.
-	gitClone func(ctx context.Context, url, branch, tempDir string) error
+	gitClone func(ctx context.Context, tempDir, url, branch, sha string) error
 }
 
 // NewResolver creates a new Resolver for a Git repository at the specified URL.
-func NewResolver(url, branch, operatorDirectory string) Resolver {
+func NewResolver(url, branch, sha string, operatorDirectory string) Resolver {
 	return Resolver{
 		URL:               url,
 		Branch:            branch,
+		SHA:               sha,
 		OperatorDirectory: operatorDirectory,
 
 		gitClone: gitClone,
@@ -50,9 +52,10 @@ func (r Resolver) Resolve(ctx context.Context) (afero.Fs, resolvers.Remover, err
 
 	log.WithField("url", r.URL).
 		WithField("branch", r.Branch).
+		WithField("sha", r.SHA).
 		Info("Cloning Git repository")
 
-	if err := r.gitClone(ctx, r.URL, r.Branch, tempDir); err != nil {
+	if err := r.gitClone(ctx, tempDir, r.URL, r.Branch, r.SHA); err != nil {
 		return nil, nil, err
 	}
 
@@ -65,9 +68,27 @@ func (r Resolver) Resolve(ctx context.Context) (afero.Fs, resolvers.Remover, err
 	return afero.NewBasePathFs(fs, path.Join(tempDir, r.OperatorDirectory)), remover, nil
 }
 
-func gitClone(ctx context.Context, url, branch, tempDir string) error {
+func gitClone(ctx context.Context, tempDir, url, branch, sha string) error {
+	logger := log.WithField("url", url).
+		WithField("branch", branch).
+		WithField("sha", sha)
+
+	if err := runAndLog(ctx, logger, "git", "clone", "--branch", branch, "--single-branch", url, tempDir); err != nil {
+		return err
+	}
+
+	if sha != "" {
+		if err := runAndLog(ctx, logger, "git", "-C", tempDir, "reset", "--hard", sha); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func runAndLog(ctx context.Context, logger *log.Entry, name string, args ...string) error {
 	//nolint:gosec
-	cmd := exec.CommandContext(ctx, "git", "clone", "--branch", branch, "--single-branch", url, tempDir)
+	cmd := exec.CommandContext(ctx, name, args...)
 
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
@@ -83,9 +104,7 @@ func gitClone(ctx context.Context, url, branch, tempDir string) error {
 
 	for scanner.Scan() {
 		t := scanner.Text()
-		log.WithField("url", url).
-			WithField("branch", branch).
-			Debug(t)
+		logger.Debug(t)
 	}
 
 	if err := cmd.Wait(); err != nil {

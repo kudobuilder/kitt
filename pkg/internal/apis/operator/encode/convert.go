@@ -51,8 +51,9 @@ func convertV1Alpha1Version(in v1alpha1.Version) operator.Version {
 func convertV1Alpha1Git(in v1alpha1.Git) operator.Git {
 	out := operator.Git{
 		Source:    in.Source,
-		Tag:       in.Tag,
 		Directory: in.Directory,
+		Tag:       in.Tag,
+		SHA:       in.SHA,
 	}
 
 	return out
