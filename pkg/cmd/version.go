@@ -15,7 +15,7 @@ func versionCmd(version semver.Version) *cobra.Command {
 	}
 
 	cmd.Run = func(cmd *cobra.Command, args []string) {
-		fmt.Printf("KUDO Hub %s\n", version.String())
+		fmt.Printf("kitt %s\n", version.String())
 	}
 
 	return cmd
