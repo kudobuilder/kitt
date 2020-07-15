@@ -3,6 +3,7 @@ package git
 import (
 	"bufio"
 	"context"
+	"errors"
 	"os/exec"
 	"path"
 
@@ -42,6 +43,10 @@ func NewResolver(url, branch, sha string, operatorDirectory string) Resolver {
 func (r Resolver) Resolve(ctx context.Context) (afero.Fs, resolvers.Remover, error) {
 	fs := afero.NewOsFs()
 
+	if r.Branch == "" && r.SHA == "" {
+		return nil, nil, errors.New("neither branch nor SHA provided")
+	}
+
 	tempDir, err := afero.TempDir(fs, "", "")
 	if err != nil {
 		return nil, nil, err
@@ -69,16 +74,20 @@ func (r Resolver) Resolve(ctx context.Context) (afero.Fs, resolvers.Remover, err
 }
 
 func gitClone(ctx context.Context, tempDir, url, branch, sha string) error {
-	logger := log.WithField("url", url).
-		WithField("branch", branch).
-		WithField("sha", sha)
+	if branch != "" {
+		logger := log.WithField("url", url).WithField("branch", branch)
 
-	if err := runAndLog(ctx, logger, "git", "clone", "--branch", branch, "--single-branch", url, tempDir); err != nil {
-		return err
-	}
+		if err := runAndLog(ctx, logger, "git", "clone", "--branch", branch, "--single-branch", url, tempDir); err != nil {
+			return err
+		}
+	} else {
+		logger := log.WithField("url", url).WithField("sha", sha)
 
-	if sha != "" {
-		if err := runAndLog(ctx, logger, "git", "-C", tempDir, "reset", "--hard", sha); err != nil {
+		if err := runAndLog(ctx, logger, "git", "clone", url, tempDir); err != nil {
+			return err
+		}
+
+		if err := runAndLog(ctx, logger, "git", "-C", tempDir, "checkout", sha); err != nil {
 			return err
 		}
 	}
