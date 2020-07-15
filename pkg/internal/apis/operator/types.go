@@ -42,11 +42,10 @@ type Git struct {
 	// Directory where the KUDO operator is defined in the Git repository.
 	Directory string
 
-	// Tag (or branch) of the KUDO operator version.
+	// Tag of the KUDO operator version. Either this or 'SHA' has to be set.
 	Tag string
 
-	// Optional SHA of the KUDO operator version if a branch is used instead of
-	// a tag. If this isn't set, the latest commit of the referenced branch will
-	// be used.
+	// SHA of the KUDO operator version if a branch is used instead of
+	// a tag. Either this or 'Tag' has to be set.
 	SHA string
 }
