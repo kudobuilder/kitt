@@ -23,20 +23,20 @@ Consider an operator that is developed in a Git repository. The actual operator 
 apiVersion: index.kudo.dev/v1alpha1
 kind: Operator
 name: MyOperator
-git-sources:
-- name: my-git-repository
-  url: https://github.com/example/myoperator.git
+gitSources:
+  - name: my-git-repository
+    url: https://github.com/example/myoperator.git
 versions:
-- version: "1.0.0"
-  git:
-    source: my-git-repository
-    directory: operator
-    tag: "v1.0.0"
-- version: "2.0.0"
-  git:
-    source: my-git-repository
-    directory: operator
-    tag: "v2.0.0"
+  - operatorVersion: "1.0.0"
+    git:
+      source: my-git-repository
+      directory: operator
+      tag: "v1.0.0"
+  - operatorVersion: "2.0.0"
+    git:
+      source: my-git-repository
+      directory: operator
+      tag: "v2.0.0"
 ```
 
 Running `kitt update` with this YAML as an argument will check out the referenced Git repository with the specified tags `v1.0.0` and `v2.0.0`, build tarballs from the operator package in the `operator` folder, and add these tarballs to a KUDO repository.
