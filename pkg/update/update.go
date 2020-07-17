@@ -47,7 +47,7 @@ func Update(
 	for _, operator := range operators {
 		for _, version := range operator.Versions {
 			log.WithField("operator", operator.Name).
-				WithField("version", version.Version).
+				WithField("version", version.Version()).
 				WithField("repository", repoURL).
 				WithField("path", repoPath).
 				Info("Updating operator")
@@ -68,7 +68,7 @@ func updateOperator(
 	syncedRepo *repo.SyncedRepo,
 	force bool,
 ) (err error) {
-	operatorName := fmt.Sprintf("%s-%s", operator.Name, version.Version)
+	operatorName := fmt.Sprintf("%s-%s", operator.Name, version.Version())
 
 	resolver, err := getResolver(operator, version)
 	if err != nil {
@@ -102,13 +102,13 @@ func updateOperator(
 		}
 
 		log.WithField("operator", operator.Name).
-			WithField("version", version.Version).
+			WithField("version", version.Version()).
 			WithField("repository", syncedRepo.URL).
 			WithField("tarball", pkgName).
 			Info("Added operator to the repository")
 	} else {
 		log.WithField("operator", operator.Name).
-			WithField("version", version.Version).
+			WithField("version", version.Version()).
 			WithField("repository", syncedRepo.URL).
 			Info("Operator is already in the repository")
 	}

@@ -8,7 +8,7 @@ type Operator struct {
 	Name string `yaml:"name"`
 
 	// GitSources are optional references to Git repositories.
-	GitSources []GitSource `yaml:"git-sources,omitempty"`
+	GitSources []GitSource `yaml:"gitSources,omitempty"`
 
 	// Versions of the operator.
 	Versions []Version `yaml:"versions"`
@@ -32,7 +32,11 @@ type GitSource struct {
 
 // Version describes a version of a KUDO operator.
 type Version struct {
-	Version string `yaml:"version"`
+	// OperatorVersion of the KUDO operator.
+	OperatorVersion string `yaml:"operatorVersion"`
+
+	// AppVersion of the KUDO operator, optional.
+	AppVersion string `yaml:"appVersion,omitempty"`
 
 	// Git specifies a version as a directory in a Git repository with a
 	// specific tag.

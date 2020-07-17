@@ -36,8 +36,9 @@ func convertV1Alpha1GitSource(in v1alpha1.GitSource) operator.GitSource {
 
 func convertV1Alpha1Version(in v1alpha1.Version) operator.Version {
 	out := operator.Version{
-		Version: in.Version,
-		URL:     in.URL,
+		OperatorVersion: in.OperatorVersion,
+		AppVersion:      in.AppVersion,
+		URL:             in.URL,
 	}
 
 	if in.Git != nil {

@@ -1,5 +1,7 @@
 package operator
 
+import "fmt"
+
 // Operator describes the location of a KUDO operator.
 type Operator struct {
 	// Name of the operator.
@@ -23,7 +25,11 @@ type GitSource struct {
 
 // Version describes a version of a KUDO operator.
 type Version struct {
-	Version string
+	// OperatorVersion of the KUDO operator.
+	OperatorVersion string
+
+	// AppVersion of the KUDO operator, optional.
+	AppVersion string
 
 	// Git specifies a version as a directory in a Git repository with a
 	// specific tag.
@@ -31,6 +37,16 @@ type Version struct {
 
 	// URL specifies a version as a URL of a package tarball.
 	URL *string
+}
+
+// Version prints the version as a combination of appVersion and operatorVersion
+// as described in KEP-19.
+func (v Version) Version() string {
+	if v.AppVersion != "" {
+		return fmt.Sprintf("%s_%s", v.AppVersion, v.OperatorVersion)
+	}
+
+	return v.OperatorVersion
 }
 
 // Git references a specific tag of a Git repository of a KUDO operator.
