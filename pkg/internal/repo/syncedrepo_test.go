@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	kudo "github.com/kudobuilder/kudo/pkg/kudoctl/util/repo"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"

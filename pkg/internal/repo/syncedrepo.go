@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"github.com/kudobuilder/kudo/pkg/kudoctl/packages/writer"
 	kudo "github.com/kudobuilder/kudo/pkg/kudoctl/util/repo"
 	log "github.com/sirupsen/logrus"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 
 	"github.com/kudobuilder/kitt/pkg/cmd"
 )
