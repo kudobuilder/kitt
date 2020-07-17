@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/Masterminds/semver"
+	"github.com/Masterminds/semver/v3"
 	"github.com/kudobuilder/kudo/pkg/kudoctl/packages/reader"
 	"github.com/spf13/afero"
 )
