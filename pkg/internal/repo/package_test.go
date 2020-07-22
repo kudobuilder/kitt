@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
@@ -11,10 +12,10 @@ import (
 func TestNewPackage(t *testing.T) {
 	pkgFs := afero.NewMemMapFs()
 
-	assert.NoError(t, afero.WriteFile(pkgFs, "/operator.yaml", []byte(`name: foo
+	assert.NoError(t, afero.WriteFile(pkgFs, filepath.Join(string(filepath.Separator), "operator.yaml"), []byte(`name: foo
 operatorVersion: "1.0.0"
 appVersion: "1.0.0"`), 0644))
-	assert.NoError(t, afero.WriteFile(pkgFs, "/params.yaml", []byte{}, 0644))
+	assert.NoError(t, afero.WriteFile(pkgFs, filepath.Join(string(filepath.Separator), "params.yaml"), []byte{}, 0644))
 
 	pkg, err := NewPackage(pkgFs)
 	assert.NoError(t, err)

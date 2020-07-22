@@ -1,42 +1,28 @@
-package update
+package validate
 
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/afero"
 
 	"github.com/kudobuilder/kitt/pkg/internal/apis/operator"
 	"github.com/kudobuilder/kitt/pkg/internal/repo"
 	"github.com/kudobuilder/kitt/pkg/internal/resolver"
+	"github.com/kudobuilder/kitt/pkg/internal/validation"
 	"github.com/kudobuilder/kitt/pkg/loader"
 )
 
-// Update resolves a list of operators and adds them to a repository.
-func Update(
+// Validate runs several checks on the operator reference as well as the
+// referenced package. It checks that metadata provided in the reference is
+// consistent with the metadata provided in the referenced package and also
+// verifies all referenced packages.
+func Validate(
 	ctx context.Context,
 	operatorLoader loader.OperatorLoader,
-	repoPath string,
-	repoURL string,
-	force bool,
+	strict bool,
 ) error {
-	repoFs := afero.NewBasePathFs(afero.NewOsFs(), repoPath)
-
-	isDir, err := afero.IsDir(repoFs, "")
-	if err != nil {
-		return fmt.Errorf("failed to open repository path %q: %v", repoPath, err)
-	}
-
-	if !isDir {
-		return fmt.Errorf("repository path %q is not a directory", repoPath)
-	}
-
-	syncedRepo, err := repo.NewSyncedRepo(repoFs, repoURL)
-	if err != nil {
-		return fmt.Errorf("failed to open repository %q: %v", repoPath, err)
-	}
-
 	operators, err := operatorLoader.Apply()
 	if err != nil {
 		return fmt.Errorf("failed to load operator configurations: %v", err)
@@ -46,11 +32,9 @@ func Update(
 		for _, version := range operator.Versions {
 			log.WithField("operator", operator.Name).
 				WithField("version", version.Version()).
-				WithField("repository", repoURL).
-				WithField("path", repoPath).
-				Info("Updating operator")
+				Info("Validating operator")
 
-			if err := updateOperator(ctx, operator, version, syncedRepo, force); err != nil {
+			if err := validateOperator(ctx, operator, version, strict); err != nil {
 				return err
 			}
 		}
@@ -59,12 +43,11 @@ func Update(
 	return nil
 }
 
-func updateOperator(
+func validateOperator(
 	ctx context.Context,
 	operator operator.Operator,
 	version operator.Version,
-	syncedRepo *repo.SyncedRepo,
-	force bool,
+	strict bool,
 ) (err error) {
 	operatorName := fmt.Sprintf("%s-%s", operator.Name, version.Version())
 
@@ -91,24 +74,23 @@ func updateOperator(
 		return fmt.Errorf("failed to extract package version of operator %q: %v", operatorName, err)
 	}
 
-	contains := syncedRepo.Contains(pkg)
+	validationResult := validation.Validate(operator, version, pkg)
 
-	if !contains || force {
-		pkgName, err := syncedRepo.Add(pkg)
-		if err != nil {
-			return fmt.Errorf("failed to add operator %q to the repository: %v", pkg.String(), err)
-		}
+	var warnings, errors string
 
-		log.WithField("operator", operator.Name).
-			WithField("version", version.Version()).
-			WithField("repository", syncedRepo.URL).
-			WithField("tarball", pkgName).
-			Info("Added operator to the repository")
+	if strict {
+		errors = strings.Join(append(validationResult.Warnings, validationResult.Errors...), "\n")
 	} else {
-		log.WithField("operator", operator.Name).
-			WithField("version", version.Version()).
-			WithField("repository", syncedRepo.URL).
-			Info("Operator is already in the repository")
+		warnings = strings.Join(validationResult.Warnings, "\n")
+		errors = strings.Join(validationResult.Errors, "\n")
+	}
+
+	if warnings != "" {
+		fmt.Printf("validation warnings for operator %q:\n%s", operatorName, warnings)
+	}
+
+	if errors != "" {
+		return fmt.Errorf("validation failed for operator %q:\n%s", operatorName, errors)
 	}
 
 	return nil

@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
+	"github.com/kudobuilder/kitt/pkg/loader"
 	"github.com/kudobuilder/kitt/pkg/update"
 )
 
@@ -26,7 +27,7 @@ references and creating an operator package tarball for each reference.`,
 	repoURL := cmd.Flags().String("repository_url", "", "URL of the operator repository to set in \"index.yaml\"")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		return update.Update(cmd.Context(), update.FromFiles(args), *repoPath, *repoURL, *force)
+		return update.Update(cmd.Context(), loader.FromFiles(args), *repoPath, *repoURL, *force)
 	}
 
 	return cmd

@@ -9,8 +9,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
-
-	"github.com/kudobuilder/kitt/pkg/internal/resolvers"
 )
 
 // Resolver resolves operator packages from a Git repository.
@@ -40,7 +38,7 @@ func NewResolver(url, branch, sha string, operatorDirectory string) Resolver {
 // pointing at the operator directory.
 // The repository is cloned into a temporary directory. Callers are responsible
 // for removing this directory by running the returned remover function.
-func (r Resolver) Resolve(ctx context.Context) (afero.Fs, resolvers.Remover, error) {
+func (r Resolver) Resolve(ctx context.Context) (afero.Fs, func() error, error) {
 	fs := afero.NewOsFs()
 
 	if r.Branch == "" && r.SHA == "" {
