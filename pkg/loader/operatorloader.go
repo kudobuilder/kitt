@@ -1,4 +1,4 @@
-package update
+package loader
 
 import (
 	"fmt"
@@ -7,20 +7,20 @@ import (
 	"github.com/kudobuilder/kitt/pkg/internal/apis/operator/encode"
 )
 
-// OperatorOption allows to gather operators from different sources.
-type OperatorOption interface {
-	apply() ([]operator.Operator, error)
+// OperatorLoader allows to gather operators from different sources.
+type OperatorLoader interface {
+	Apply() ([]operator.Operator, error)
 }
 
-type operatorOptionAdapter func() ([]operator.Operator, error)
+type operatorLoaderAdapter func() ([]operator.Operator, error)
 
-func (f operatorOptionAdapter) apply() ([]operator.Operator, error) {
+func (f operatorLoaderAdapter) Apply() ([]operator.Operator, error) {
 	return f()
 }
 
 // FromFiles reads operator definitions from multiple YAML files.
-func FromFiles(paths []string) OperatorOption {
-	return operatorOptionAdapter(func() ([]operator.Operator, error) {
+func FromFiles(paths []string) OperatorLoader {
+	return operatorLoaderAdapter(func() ([]operator.Operator, error) {
 		operators := make([]operator.Operator, 0, len(paths))
 
 		for _, path := range paths {

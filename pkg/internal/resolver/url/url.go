@@ -13,8 +13,6 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
-
-	"github.com/kudobuilder/kitt/pkg/internal/resolvers"
 )
 
 // Resolver resolves operator package from URLs pointing to package tarballs.
@@ -30,7 +28,7 @@ func NewResolver(url string) Resolver {
 }
 
 // Resolve downloads an operator package tarball and extracts it into a file system.
-func (r Resolver) Resolve(ctx context.Context) (fs afero.Fs, rem resolvers.Remover, err error) {
+func (r Resolver) Resolve(ctx context.Context) (fs afero.Fs, rem func() error, err error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", r.URL, nil)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create HTTP request for %q: %v", r.URL, err)

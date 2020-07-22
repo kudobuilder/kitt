@@ -16,6 +16,7 @@ func New(version semver.Version) *cobra.Command {
 	}
 
 	root.AddCommand(updateCmd())
+	root.AddCommand(validateCmd())
 	root.AddCommand(versionCmd(version))
 
 	verbose := root.PersistentFlags().BoolP("verbose", "v", false, "verbose output")
