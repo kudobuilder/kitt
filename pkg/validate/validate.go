@@ -51,12 +51,12 @@ func validateOperator(
 ) (err error) {
 	operatorName := fmt.Sprintf("%s-%s", operator.Name, version.Version())
 
-	r, err := resolver.New(operator, version)
+	resolver, err := resolver.New(operator, version)
 	if err != nil {
 		return fmt.Errorf("failed to resolve operator %q: %v", operatorName, err)
 	}
 
-	pkgFs, remover, err := r.Resolve(ctx)
+	pkgFs, remover, err := resolver.Resolve(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to resolve operator %q: %v", operatorName, err)
 	}
