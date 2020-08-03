@@ -87,7 +87,11 @@ func TestEqual(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := test.a.Equal(test.b)
-		assert.Equal(t, test.expected, actual, test.name)
+		test := test
+
+		t.Run(test.name, func(t *testing.T) {
+			actual := test.a.Equal(test.b)
+			assert.Equal(t, test.expected, actual)
+		})
 	}
 }

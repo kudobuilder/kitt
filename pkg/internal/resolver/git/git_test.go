@@ -54,26 +54,28 @@ func TestResolve(t *testing.T) {
 	for _, test := range tests {
 		test := test
 
-		resolver := &Resolver{
-			URL:               "example.org",
-			Branch:            test.branch,
-			SHA:               test.sha,
-			OperatorDirectory: "operator",
-			gitClone:          test.cloneFake,
-		}
+		t.Run(test.name, func(t *testing.T) {
+			resolver := &Resolver{
+				URL:               "example.org",
+				Branch:            test.branch,
+				SHA:               test.sha,
+				OperatorDirectory: "operator",
+				gitClone:          test.cloneFake,
+			}
 
-		_, remover, err := resolver.Resolve(context.Background())
+			_, remover, err := resolver.Resolve(context.Background())
 
-		if remover != nil {
-			defer func() {
-				assert.NoError(t, remover())
-			}()
-		}
+			if remover != nil {
+				defer func() {
+					assert.NoError(t, remover())
+				}()
+			}
 
-		if test.expectErr {
-			assert.Error(t, err)
-		} else {
-			assert.NoError(t, err)
-		}
+			if test.expectErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
