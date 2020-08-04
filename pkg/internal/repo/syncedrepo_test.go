@@ -57,8 +57,12 @@ func TestContains(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual := repo.Contains(test.pkg)
-		assert.Equal(t, test.expected, actual, test.name)
+		test := test
+
+		t.Run(test.name, func(t *testing.T) {
+			actual := repo.Contains(test.pkg)
+			assert.Equal(t, test.expected, actual)
+		})
 	}
 }
 
