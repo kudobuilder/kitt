@@ -46,6 +46,9 @@ func convertV1Alpha1Version(in v1alpha1.Version) operator.Version {
 		out.Git = &git
 	}
 
+	if in.SkipVerify != nil {
+		out.SkipVerify = *in.SkipVerify
+	}
 	return out
 }
 
