@@ -37,6 +37,10 @@ type Version struct {
 
 	// URL specifies a version as a URL of a package tarball.
 	URL *string
+
+	// SkipVerify can be used to skip the KUDO package verification step to publish
+	// old versions of an operator that would fail the package verification
+	SkipVerify bool
 }
 
 // Version prints the version as a combination of appVersion and operatorVersion

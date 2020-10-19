@@ -44,6 +44,10 @@ type Version struct {
 
 	// URL specifies a version as a URL of a package tarball.
 	URL *string `yaml:"url,omitempty"`
+
+	// SkipVerify can be used to skip the KUDO package verification step to publish
+	// old versions of an operator that would fail the package verification
+	SkipVerify *bool `yaml:"url,omitempty"`
 }
 
 // Git references a specific tag of a Git repository of a KUDO operator.

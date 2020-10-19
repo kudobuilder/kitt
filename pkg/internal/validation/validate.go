@@ -16,7 +16,9 @@ func Validate(operator operator.Operator, version operator.Version, pkg repo.Pac
 	result := Result{}
 
 	validateVersion(version, pkg, &result)
-	validateVerify(pkg, &result)
+	if !version.SkipVerify {
+		validateVerify(pkg, &result)
+	}
 
 	return result
 }
